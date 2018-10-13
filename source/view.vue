@@ -1,0 +1,241 @@
+<template lang='pug'>
+	div(:class='`step${step}`')
+		.logo(
+		@click='logoClick'
+		:title='logoTitle'
+		)
+			include kot-brodskogo-logo.svg
+		unlock.unlock(
+		ref='unlock'
+		@x='unlockMove'
+		@unlocked='nextScene'
+		:hidden='step > 2'
+		)
+		p.text.text2(
+		ref='text2'
+		v-if='text.parts && step === 2'
+		)
+			template(v-for='letter in text.visible')
+				span(v-html='letter')
+			template(v-for='letter in text.hidden')
+				span.invisible(v-html='letter')
+		video.video.video1(muted playsinline ref='video1')
+			source(src='public/media/blackboard.mp4' type='video/mp4')
+		video.video.video2(muted playsinline ref='video2')
+			source(src='public/media/typewriter.mp4' type='video/mp4')
+		nav.navLayer
+			ul.nav
+				li.navItem(v-for='item in nav')
+					a.navLink(v-html='item.label')
+</template>
+<style lang='sass' scoped>
+	.logo
+		absolute: top 1vw left 1vw
+		z-index: 10
+		width: 5vw
+		color: white
+		cursor: pointer
+		transition: opacity 0.3s
+		&:hover
+			opacity: 0.7
+		svg
+			path
+				fill: currentColor
+				transition: fill 1s
+	.unlock
+		absolute: top 50% left 40vw right 40vw
+		z-index: 10
+		width: auto
+		transform: translateY(-50%)
+	.video
+		absolute: top left
+		z-index: 1
+		size: 100%
+		object-fit: cover
+		opacity: 0
+		transition: opacity 1s
+	.text
+		absolute: top left 50%
+		z-index: 2
+		width: 20em
+		margin-left: -10em
+		color: white
+		opacity: 0
+		.invisible
+			opacity: 0
+	.step1
+		.video1
+			opacity: 1
+	.step2
+		.video2
+			opacity: 1
+		.text2
+			opacity: 1
+	.step3
+		.navLayer
+			opacity: 1
+		.logo
+			color: black
+	.navLayer
+		absolute: top left
+		size: 100%
+		display: flex
+		align-items: center
+		justify-content: center
+		z-index: 1
+		background-color: white
+		opacity: 0
+		transition: opacity 1s
+	.nav
+		text-align: center
+		list-style: none
+		font-size: 3em
+	.navItem
+		margin-y: 1em
+	.navLink
+		cursor: pointer
+		text-decoration: underline
+		&:hover
+			text-decoration: none
+</style>
+<script>
+	let playTimeout
+	let video
+	let step2timeout
+	let step3interval
+	let step3timeout
+	let navStep = 3
+	import unlock from './slide-to-unlock'
+	export default {
+		name: 'app-view',
+		components: {
+			unlock,
+		},
+		data() {
+			return {
+				interactive: true,
+				videoPaused: true,
+				step: 3,
+				counter: 0,
+				text: {
+					speed: 2,
+					string: 'Кот Бродского − это проект про книги, город, людей, котов, бабушкин ундервуд и старую шляпу.',
+					parts: [],
+					visible: [],
+					hidden: [],
+				},
+				nav: [
+					{
+						label: 'что почитать',
+					},
+					{
+						label: 'что посмотреть',
+					},
+					{
+						label: 'куда пойти',
+					},
+				],
+			}
+		},
+		mounted() {
+			switch (this.step) {
+				case 1:
+					this.initStep1()
+					break
+				case 2:
+					this.initStep2()
+					break
+				default:
+					break
+			}
+		},
+		computed: {
+			logoTitle() {
+				if (this.step === navStep) {
+					return 'Повторить вступление'
+				} else {
+					return 'Перейти к навигации'
+				}
+			}
+		},
+		methods: {
+			logoClick() {
+				if (this.step === navStep) {
+					this.step = 1
+					this.initStep1()
+				} else {
+					this.step = navStep
+				}
+			},
+			unlockMove(newVal, oldVal) {
+				console.log({timeout: playTimeout, newVal, oldVal})
+				if (newVal > oldVal && this.interactive) {
+					this.playVideo(300)
+					this.counter = this.counter + 1
+					this.updateTextData(this.counter + this.text.speed)
+				}
+			},
+			initStep1() {
+				this.counter = 0
+				video = this.$refs['video1']
+				this.playVideo(2000)
+			},
+			initStep2() {
+				this.counter = 0
+				video = this.$refs['video2']
+				this.text.parts = this.text.string.split('')
+				this.text.visible = []
+				this.text.hidden = []
+			},
+			nextScene() {
+				this.interactive = false
+				clearTimeout(step2timeout)
+				clearInterval(step3interval)
+				clearTimeout(step3timeout)
+				let time
+				switch (this.step) {
+					case 1:
+						time = 3000
+						this.playVideo(time)
+						step2timeout = setTimeout(() => {
+							this.step = this.step + 1
+							this.$refs['unlock'].lock()
+							this.interactive = true
+							this.initStep2()
+						}, time)
+						break
+					case 2:
+						time = 5000
+						this.playVideo(time)
+						step3interval = setInterval(() => {
+							this.counter = this.counter + 1
+							this.updateTextData(this.counter + this.text.speed)
+						}, 20)
+						step3timeout = setTimeout(() => {
+							this.step = this.step + 1
+							this.$refs['unlock'].lock()
+							this.interactive = true
+						}, time)
+						break
+					default:
+						break
+				}
+			},
+			playVideo(time = 100) {
+				clearTimeout(playTimeout)
+				this.videoPaused = false
+				playTimeout = setTimeout(this.pauseVideo, time)
+				video.play()
+			},
+			pauseVideo() {
+				this.videoPaused = true
+				video.pause()
+			},
+			updateTextData(progress = 0) {
+				const visibleWords = Math.floor(progress / this.text.speed)
+				this.text.visible = this.text.parts.slice(0, visibleWords)
+				this.text.hidden = this.text.parts.slice(visibleWords)
+			},
+		},
+	}
+</script>
