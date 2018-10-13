@@ -1,5 +1,5 @@
 const env = require('./utils/env')
 module.exports = {
-	publicPath: '',
+	// publicPath: '',
 	port: env.DEV_PORT,
 }

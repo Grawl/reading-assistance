@@ -1,5 +1,8 @@
 <template lang='pug'>
 	div(:class='`step${step}`')
+		.loading(
+		:class="{ 'hidden': !loading }"
+		) Загрузка
 		.logo(
 		@click='logoClick'
 		:title='logoTitle'
@@ -19,16 +22,28 @@
 				span(v-html='letter')
 			template(v-for='letter in text.hidden')
 				span.invisible(v-html='letter')
-		video.video.video1(muted playsinline ref='video1')
-			source(src='public/media/blackboard.mp4' type='video/mp4')
-		video.video.video2(muted playsinline ref='video2')
-			source(src='public/media/typewriter.mp4' type='video/mp4')
+		video.video.video1(muted playsinline preload='auto' ref='video1')
+			source(src='media/blackboard.mp4' type='video/mp4')
+		video.video.video2(muted playsinline preload='auto' ref='video2')
+			source(src='media/typewriter.mp4' type='video/mp4')
 		nav.navLayer
 			ul.nav
 				li.navItem(v-for='item in nav')
 					a.navLink(v-html='item.label')
 </template>
 <style lang='sass' scoped>
+	.loading
+		absolute: top left
+		size: 100%
+		z-index: 10
+		display: flex
+		justify-content: center
+		align-items: center
+		background-color: white
+		color: black
+		cursor: progress
+		&.hidden
+			display: none
 	.logo
 		absolute: top 1vw left 1vw
 		z-index: 10
@@ -113,9 +128,10 @@
 		},
 		data() {
 			return {
+				loading: true,
 				interactive: true,
 				videoPaused: true,
-				step: 3,
+				step: 1,
 				counter: 0,
 				text: {
 					speed: 2,
@@ -178,7 +194,10 @@
 			initStep1() {
 				this.counter = 0
 				video = this.$refs['video1']
-				this.playVideo(2000)
+				video.addEventListener("canplaythrough", () => {
+					this.loading = false
+					this.playVideo(2000)
+				}, false)
 			},
 			initStep2() {
 				this.counter = 0
@@ -186,6 +205,9 @@
 				this.text.parts = this.text.string.split('')
 				this.text.visible = []
 				this.text.hidden = []
+				video.addEventListener("canplaythrough", () => {
+					this.loading = false
+				}, false)
 			},
 			nextScene() {
 				this.interactive = false
