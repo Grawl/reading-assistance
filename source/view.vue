@@ -49,6 +49,7 @@
 		width: 5vw
 		color: white
 		cursor: pointer
+		pointer-events: auto
 		transition: opacity 0.3s
 		&:hover
 			opacity: 0.7
@@ -61,13 +62,16 @@
 		z-index: 10
 		width: auto
 		transform: translateY(-50%)
+		pointer-events: auto
 	.video
 		absolute: top left
 		z-index: 1
 		size: 100%
 		object-fit: cover
+		background-color: white
 		opacity: 0
 		transition: opacity 1s
+		pointer-events: none
 	.text
 		absolute: top left 50%
 		z-index: 2
@@ -152,7 +156,7 @@
 				}
 			},
 			unlockMove(newVal, oldVal) {
-				console.log({timeout: playTimeout, newVal, oldVal})
+				console.log('unlock move', { timeout: playTimeout, newVal, oldVal })
 				if (newVal > oldVal && this.interactive) {
 					this.playVideo(300)
 					this.counter = this.counter + 1
@@ -178,15 +182,10 @@
 				this.text.parts = this.text.string.split('')
 				this.text.visible = []
 				this.text.hidden = []
-				setTimeout(() => {
-					this.step = 3
-				}, 5000)
-				video.addEventListener("canplaythrough", () => {
-					this.step = 2
-					this.isVideoLoading = false
-				}, false)
+				this.step = 2
 			},
 			nextScene() {
+				console.log('next scene')
 				this.interactive = false
 				clearTimeout(step2timeout)
 				clearInterval(step3interval)
@@ -197,6 +196,7 @@
 						time = 3000
 						this.playVideo(time)
 						step2timeout = setTimeout(() => {
+							console.log('case 1')
 							this.step = this.step + 1
 							this.$refs['unlock'].lock()
 							this.interactive = true
@@ -211,12 +211,16 @@
 							this.updateTextData(this.counter + this.text.speed)
 						}, 20)
 						step3timeout = setTimeout(() => {
+							console.log('case 2')
 							this.step = this.step + 1
 							this.$refs['unlock'].lock()
 							this.interactive = true
 						}, time)
 						break
 					default:
+						clearTimeout(step2timeout)
+						clearInterval(step3interval)
+						clearTimeout(step3timeout)
 						break
 				}
 			},

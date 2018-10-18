@@ -1,0 +1,72 @@
+doctype html
+html
+	head
+		meta(http-equiv='Content-type' content='text/html; charset=utf-8')
+		meta(http-equiv='X-UA-Compatible' content='IE=edge')
+		meta(name='viewport' content='width=device-width, initial-scale=1')
+		title=htmlWebpackPlugin.options.title
+		meta(name='description' content=htmlWebpackPlugin.options.description)
+		style.
+			html {
+				font-family: sans-serif;
+			}
+			.videoPresentation {
+				position: absolute;
+				top: 0;
+				left: 0;
+				z-index: 2;
+				width: 100%;
+				height: 100%;
+				pointer-events: none;
+			}
+			.navLayer {
+				position: absolute;
+				top: 0;
+				left: 0;
+				z-index: 1;
+				width: 100%;
+				height: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background-color: white;
+			}
+			.nav {
+				text-align: center;
+				list-style: none;
+				font-size: 3em;
+			}
+			.navItem {
+				margin: 1em 0;
+			}
+			.navLink {
+				cursor: pointer;
+				text-decoration: underline;
+			}
+			.navLink:hover {
+				text-decoration: none;
+			}
+	body
+		#video-presentation
+		nav.navLayer
+			ul.nav
+				-
+					const nav = [
+						{
+							link: '#read',
+							label: 'что почитать',
+						},
+						{
+							link: '#watch',
+							label: 'что посмотреть',
+						},
+						{
+							link: '#go',
+							label: 'куда пойти',
+						},
+					]
+				for item in nav
+					li.navItem
+						a.navLink(
+						href=item.link
+						)=item.label

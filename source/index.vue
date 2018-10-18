@@ -1,5 +1,5 @@
 <template lang='pug'>
-	app-body
+	app-body.videoPresentation
 </template>
 <style lang='sass' src='./style.sass' />
 <script>
