@@ -44,7 +44,7 @@
 		&.hidden
 			display: none
 	.logo
-		absolute: top 1vw left 1vw
+		fixed: top 1vw left 1vw
 		z-index: 30
 		width: 5vw
 		color: white
@@ -58,7 +58,7 @@
 				fill: currentColor
 				transition: fill 1s
 	.unlock
-		absolute: top 50% left 40vw right 40vw
+		absolute: top 50% left 30vw right 30vw
 		z-index: 10
 		width: auto
 		transform: translateY(-50%)
@@ -68,7 +68,7 @@
 		z-index: 1
 		size: 100%
 		object-fit: cover
-		background-color: white
+		background-color: black
 		opacity: 0
 		transition: opacity 1s
 		pointer-events: none
@@ -84,9 +84,15 @@
 	.step1
 		.video1
 			opacity: 1
+			transition: opacity 1s
+			pointer-events: auto
 	.step2
+		.video1
+			transition: opacity 5s
 		.video2
 			opacity: 1
+			transition: opacity 1s
+			pointer-events: auto
 		.text2
 			opacity: 1
 	.step3
