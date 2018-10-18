@@ -5,6 +5,7 @@
 	"engines": {
 		"node": "^9.11.2"
 	},
+	"repository": "https://github.com/Grawl/reading-assistance",
 	"author": {
 		"email": "mail@grawl.ru",
 		"name": "Даниил Пронин",
