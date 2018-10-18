@@ -1,7 +1,7 @@
 <template lang='pug'>
-	div(:class='`step${step}`')
-		.loading(
-		:class="{ 'hidden': !loading }"
+	div(:class="[ `step${step}`, { isVideoLoading } ]")
+		.videoLoading(
+		:class="{ 'hidden': !isVideoLoading }"
 		) Загрузка
 		.logo(
 		@click='logoClick'
@@ -26,13 +26,12 @@
 			source(src='media/blackboard.mp4' type='video/mp4')
 		video.video.video2(muted playsinline preload='auto' ref='video2')
 			source(src='media/typewriter.mp4' type='video/mp4')
-		nav.navLayer
-			ul.nav
-				li.navItem(v-for='item in nav')
-					a.navLink(v-html='item.label')
 </template>
 <style lang='sass' scoped>
-	.loading
+	.isVideoLoading
+		.logo
+			color: black
+	.videoLoading
 		absolute: top left
 		size: 100%
 		z-index: 10
@@ -46,7 +45,7 @@
 			display: none
 	.logo
 		absolute: top 1vw left 1vw
-		z-index: 10
+		z-index: 30
 		width: 5vw
 		color: white
 		cursor: pointer
@@ -87,31 +86,11 @@
 		.text2
 			opacity: 1
 	.step3
-		.navLayer
-			opacity: 1
 		.logo
 			color: black
-	.navLayer
-		absolute: top left
-		size: 100%
-		display: flex
-		align-items: center
-		justify-content: center
-		z-index: 1
-		background-color: white
-		opacity: 0
-		transition: opacity 1s
-	.nav
-		text-align: center
-		list-style: none
-		font-size: 3em
-	.navItem
-		margin-y: 1em
-	.navLink
-		cursor: pointer
-		text-decoration: underline
-		&:hover
-			text-decoration: none
+		.videoLoading
+			opacity: 0
+			pointer-events: none
 </style>
 <script>
 	let playTimeout
@@ -119,7 +98,7 @@
 	let step2timeout
 	let step3interval
 	let step3timeout
-	let navStep = 3
+	const navStep = 3
 	import unlock from './slide-to-unlock'
 	export default {
 		name: 'app-view',
@@ -128,7 +107,7 @@
 		},
 		data() {
 			return {
-				loading: true,
+				isVideoLoading: true,
 				interactive: true,
 				videoPaused: true,
 				step: 1,
@@ -140,17 +119,6 @@
 					visible: [],
 					hidden: [],
 				},
-				nav: [
-					{
-						label: 'что почитать',
-					},
-					{
-						label: 'что посмотреть',
-					},
-					{
-						label: 'куда пойти',
-					},
-				],
 			}
 		},
 		mounted() {
@@ -194,8 +162,13 @@
 			initStep1() {
 				this.counter = 0
 				video = this.$refs['video1']
+				const goToStep3 = setTimeout(() => {
+					this.step = 3
+				}, 5000)
 				video.addEventListener("canplaythrough", () => {
-					this.loading = false
+					clearTimeout(goToStep3)
+					this.step = 1
+					this.isVideoLoading = false
 					this.playVideo(2000)
 				}, false)
 			},
@@ -205,8 +178,12 @@
 				this.text.parts = this.text.string.split('')
 				this.text.visible = []
 				this.text.hidden = []
+				setTimeout(() => {
+					this.step = 3
+				}, 5000)
 				video.addEventListener("canplaythrough", () => {
-					this.loading = false
+					this.step = 2
+					this.isVideoLoading = false
 				}, false)
 			},
 			nextScene() {
