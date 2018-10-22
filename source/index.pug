@@ -4,8 +4,14 @@ html.no-js
 		meta(http-equiv='Content-type' content='text/html; charset=utf-8')
 		meta(http-equiv='X-UA-Compatible' content='IE=edge')
 		meta(name='viewport' content='width=device-width, initial-scale=1')
-		link(rel='preload' href='media/blackboard.mp4' as='video' type="video/mp4")
-		link(rel='preload' href='media/typewriter.mp4' as='video' type="video/mp4")
+		link(rel='preload' as='video'
+		href=htmlWebpackPlugin.options.step1videoURL
+		type=htmlWebpackPlugin.options.step1videoType
+		)
+		link(rel='preload' as='video'
+		href=htmlWebpackPlugin.options.step2videoURL
+		type=htmlWebpackPlugin.options.step2videoType
+		)
 		title=htmlWebpackPlugin.options.title
 		meta(name='description' content=htmlWebpackPlugin.options.description)
 		style.
@@ -22,6 +28,17 @@ html.no-js
 			window.rootElement = document.documentElement
 			rootElement.classList.remove('no-js')
 			rootElement.classList.add('js')
+			window['site'] = {
+				description: '#{htmlWebpackPlugin.options.description}',
+				step1video: {
+					url: '#{htmlWebpackPlugin.options.step1videoURL}',
+					type: '#{htmlWebpackPlugin.options.step1videoType}',
+				},
+				step2video: {
+					url: '#{htmlWebpackPlugin.options.step2videoURL}',
+					type: '#{htmlWebpackPlugin.options.step2videoType}',
+				},
+			}
 		style.
 			html {
 				font-family: sans-serif;

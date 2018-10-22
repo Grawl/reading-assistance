@@ -22,10 +22,16 @@
 				span(v-html='letter')
 			template(v-for='letter in text.hidden')
 				span.invisible(v-html='letter')
-		video.video.video1(muted playsinline preload='auto' ref='video1')
-			source(src='media/blackboard.mp4' type='video/mp4')
-		video.video.video2(muted playsinline preload='auto' ref='video2')
-			source(src='media/typewriter.mp4' type='video/mp4')
+		video.video.video1(
+		muted playsinline preload='auto'
+		ref='video1'
+		)
+			source(:src='step1video.url' :type='step1video.type')
+		video.video.video2(
+		muted playsinline preload='auto'
+		ref='video2'
+		)
+			source(:src='step2video.url' :type='step2video.type')
 </template>
 <style lang='sass' scoped>
 	.isVideoLoading
@@ -103,13 +109,13 @@
 			pointer-events: none
 </style>
 <script>
+	import unlock from './slide-to-unlock'
 	let playTimeout
 	let video
 	let step2timeout
 	let step3interval
 	let step3timeout
 	const navStep = 3
-	import unlock from './slide-to-unlock'
 	export default {
 		name: 'app-view',
 		components: {
@@ -124,12 +130,29 @@
 				counter: 0,
 				text: {
 					speed: 2,
-					string: 'Кот Бродского − это проект про книги, город, людей, котов, бабушкин ундервуд и старую шляпу.',
+					string: null,
 					parts: [],
 					visible: [],
 					hidden: [],
 				},
+				step1video: {
+					url: null,
+					type: null,
+				},
+				step2video: {
+					url: null,
+					type: null,
+				},
 			}
+		},
+		beforeMount() {
+			const externalStorage = this.$root.externalStorage
+			console.log({ externalStorage })
+			this.text.string = externalStorage.description
+			this.step1video.url = externalStorage.step1video.url
+			this.step1video.type = externalStorage.step1video.type
+			this.step2video.url = externalStorage.step2video.url
+			this.step2video.type = externalStorage.step2video.type
 		},
 		mounted() {
 			switch (this.step) {
@@ -173,6 +196,7 @@
 				this.counter = 0
 				video = this.$refs['video1']
 				const goToStep3 = setTimeout(() => {
+					console.warn('step 1 video not loaded in 5000ms')
 					this.step = 3
 				}, 5000)
 				video.addEventListener("canplaythrough", () => {
