@@ -83,6 +83,8 @@
 		z-index: 2
 		width: 20em
 		margin-left: -10em
+		font-family: 'PT Mono', monospace
+		font-size: 1.6em
 		color: white
 		opacity: 0
 		.invisible
@@ -116,6 +118,8 @@
 	let step3interval
 	let step3timeout
 	const navStep = 3
+	const debugStep2 = false
+	const debugStep3 = false
 	export default {
 		name: 'app-view',
 		components: {
@@ -155,6 +159,14 @@
 			this.step2video.type = externalStorage.step2video.type
 		},
 		mounted() {
+			if (debugStep2) {
+				this.isVideoLoading = false
+				this.step = 2
+			}
+			if (debugStep3) {
+				this.isVideoLoading = false
+				this.step = 3
+			}
 			switch (this.step) {
 				case 1:
 					this.initStep1()
@@ -180,6 +192,7 @@
 				if (this.step === navStep) {
 					this.step = 1
 					this.initStep1()
+					this.playVideo(2000)
 				} else {
 					this.step = navStep
 				}
@@ -213,6 +226,9 @@
 				this.text.visible = []
 				this.text.hidden = []
 				this.step = 2
+				if (debugStep2) {
+					this.updateTextData(1000)
+				}
 			},
 			nextScene() {
 				console.log('next scene')
