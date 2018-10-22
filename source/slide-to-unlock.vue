@@ -9,6 +9,7 @@
 		)
 			.animationLayer
 				.visiblePart
+				.circle
 		.target
 </template>
 <style lang='sass' scoped>
@@ -40,6 +41,8 @@
 				transform: scale(0.25)
 			.animationLayer
 				animation: none
+			.circle
+				animation: none
 		.animationLayer
 			absolute: top left
 			size: 100%
@@ -53,6 +56,22 @@
 			transform: scale(0.5)
 			transition: transform 0.2s
 			will-change: transform
+		.circle
+			absolute: top left
+			size: 100%
+			border-radius: inherit
+			border: 1px solid white
+			transform: scale(0)
+			opacity: 0
+			animation: circle 4s infinite ease-out
+			will-change: transform
+			@keyframes circle
+				from
+					transform: scale(0)
+					opacity: 0.2
+				to
+					transform: scale(2)
+					opacity: 0
 	.target
 		absolute: top -1px right
 		border: 1px solid white
